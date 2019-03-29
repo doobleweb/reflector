@@ -1,0 +1,15 @@
+{
+  "name": "reflector",
+  "version": "1.0.0",
+  "description": "Reflect text between languages",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "author": "Stacy Semo",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.4",
+    "request": "^2.88.0"
+  }
+}

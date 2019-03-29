@@ -34,10 +34,10 @@ app.post('/slackReflector',function(req,res){
         var recv = JSON.parse(body);  //parse as json
         var str = recv.messages['0']['text']; // text from conversation
         var user = recv.messages['0']['username'];
-        if (user != 'Slack API Tester')
+        if (user != 'reflect')
             {
               var resObj =he.decideLang(str);
-              // preapre post msg
+              // prepare post msg
               var postReflector = {
                 uri : 'https://slack.com/api/chat.postMessage',
                 method: 'POST',
@@ -45,6 +45,7 @@ app.post('/slackReflector',function(req,res){
                   'token':      api.Slack_API_Key,
                   'channel':    c_id,
                   'text':       resObj,
+                  'username' : 'reflect',
                   }
                 }
                 // Start the last request to post back to slack
@@ -58,9 +59,10 @@ app.post('/slackReflector',function(req,res){
             }
        else {
         res.end();
-}
-        });
+      }
+  });
 });
+
 app.listen(3000, function(){
   console.log('Server stated on port 3000');
 });
