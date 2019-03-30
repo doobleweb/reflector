@@ -1,9 +1,7 @@
 
-config\.json
 
 node_modules/*
 
 *.md
 
-
-node_modules/accepts/LICENSE
+config_bu\.json

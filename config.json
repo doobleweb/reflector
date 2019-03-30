@@ -1,0 +1,4 @@
+{
+  "__comment":"here will be stored all the api keys from different applications to inclusive",
+  "Slack_API_Key":"write your slack api key in here"
+}
