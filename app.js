@@ -17,6 +17,8 @@ app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 // after that the app will post back with api function
 app.post('/slackReflector',function(req,res){
   var c_id = req.body.channel_id; //get the channel id that requested  reflection
+  var givenText = req.body.text; //get text if request
+
       //preapre get text msg
       var getLastWord = {
         uri : 'https://slack.com/api/conversations.history',
@@ -32,9 +34,14 @@ app.post('/slackReflector',function(req,res){
       // Start the second request to get the last word or sentence
       request(getLastWord, function(error,response,body){
         var recv = JSON.parse(body);  //parse as json
+        if (!givenText){ //check if givenText is null
         var str = recv.messages['0']['text']; // text from conversation
+        }
+        else {
+          var str = givenText;
+        }
         var user = recv.messages['0']['username'];
-        if (user != 'reflect')
+        if (user != 'reflect' || str == givenText)
             {
               var resObj =he.decideLang(str);
               // prepare post msg
