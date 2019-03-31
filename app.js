@@ -2,6 +2,7 @@ var express = require('express');          // express get and post
 var request = require('request');          // need inorder to make a get command inside post request
 var bodyParser = require('body-parser');   // need inorder to parse body in line 19
 var api = require('./config.json');         // json file to save APIs
+var he = require('./he');                  // supllies the function that will reflect the text
 var post = require('./postMsg.js');
 
 const app = express();
@@ -33,15 +34,35 @@ app.post('/slackReflector',function(req,res){
 
       // Start the second request to get the last word or sentence
       request(getLastWord, function(error,response,body){
-        if(post.postBack(body,givenText,c_id,api.Slack_API_Key,'https://slack.com/api/chat.postMessage'))
-        {
-          // Print out the response body
-          console.log(body);
-          res.send(response.status_code);
+        var recv = JSON.parse(body);  //parse as json
+        console.log(recv);
+          if (!givenText){ //check if givenText is null
+        var str = recv.messages['0']['text']; // text from conversation
         }
         else {
-          res.end();
+          var str = givenText;
         }
+        var user = recv.messages['0']['username'];
+        if (user != 'reflect' || str == givenText)
+            {
+              var resObj =he.decideLang(str);  //reflect
+              // prepare post msg
+              var postReflector = {
+                uri : 'https://slack.com/api/chat.postMessage' ,
+                method: 'POST',
+                qs:   {
+                  'token':      api.Slack_API_Key,
+                  'channel':    c_id,
+                  'text':       resObj
+                  }
+                }
+                if(post.postBack(postReflector))
+                {
+                  res.send(response.status_code);
+                }
+
+              }
+              res.end();
   });
 });
 
