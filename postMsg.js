@@ -2,7 +2,7 @@ var he = require('./he');                  // supllies the function that will re
 var request = require('request');          // need inorder to make a get command inside post request
 
 module.exports = {
-postBack: function(body,givenText,c_id,apiKey){
+postBack: function(body,givenText,c_id,apiKey,uri){
     var recv = JSON.parse(body);  //parse as json
       if (!givenText){ //check if givenText is null
     var str = recv.messages['0']['text']; // text from conversation
@@ -13,27 +13,27 @@ postBack: function(body,givenText,c_id,apiKey){
     var user = recv.messages['0']['username'];
     if (user != 'reflect' || str == givenText)
         {
-          var resObj =he.decideLang(str);
+          var resObj =he.decideLang(str);  //reflect
           // prepare post msg
           var postReflector = {
-            uri : 'https://slack.com/api/chat.postMessage',
+            uri : uri ,
             method: 'POST',
             qs:   {
               'token':      apiKey,
               'channel':    c_id,
-              'text':       resObj,
-              'username' : 'reflect',
+              'text':       resObj
               }
             }
             // Start the last request to post back to slack
             request(postReflector, function (error, response, body) {
               if (!error && response.statusCode == 200) {
-                return true;
+                return body;
               }
             });
         }
    else {
+     console.log("Errpr while posting back");
      return false;
-  }
-}
+   }
+ }
 }

@@ -33,7 +33,7 @@ app.post('/slackReflector',function(req,res){
 
       // Start the second request to get the last word or sentence
       request(getLastWord, function(error,response,body){
-        if(post.postBack(body,givenText,c_id,api.Slack_API_Key))
+        if(post.postBack(body,givenText,c_id,api.Slack_API_Key,'https://slack.com/api/chat.postMessage'))
         {
           // Print out the response body
           console.log(body);
@@ -45,6 +45,6 @@ app.post('/slackReflector',function(req,res){
   });
 });
 
-app.listen(3000, function(){
-  console.log('Server stated on port 3000');
+app.listen(4321, function(){
+  console.log('Server stated on port 4321');
 });
