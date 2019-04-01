@@ -56,7 +56,7 @@ app.post('/slackReflector',function(req,res){
                   'text':       resObj
                   }
                 }
-                if(post.postBack(postReflector))
+                if(post.postBack(postReflector)) //if  succeeded return 200 code
                 {
                   res.send(response.status_code);
                 }
@@ -65,7 +65,7 @@ app.post('/slackReflector',function(req,res){
               res.end();
   });
 });
-//app port
+//listen  port
 app.listen(4321, function(){
   console.log('Server stated on port 4321');
 });
