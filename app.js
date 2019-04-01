@@ -1,7 +1,7 @@
 var express = require('express');          // express get and post
 var request = require('request');          // need inorder to make a get command inside post request
 var bodyParser = require('body-parser');   // need inorder to parse body in line 19
-var api = require('./config.json');         // json file to save APIs
+var api = require('./config_bu.json');         // json file to save APIs
 var he = require('./he');                  // supllies the function that will reflect the text
 var post = require('./postMsg.js');
 
@@ -22,8 +22,8 @@ app.post('/slackReflector',function(req,res){
 
       //preapre get text msg
       var getLastWord = {
-        uri : 'https://slack.com/api/conversations.history',
-        method: 'GET',
+        uri : 'https://slack.com/api/conversations.history',//  get the last massage in the channel that requested the reflaction
+        method: 'GET', // type of method
         qs:   {
           'token':       api.Slack_API_Key,
           'channel':     c_id,
@@ -35,14 +35,14 @@ app.post('/slackReflector',function(req,res){
       // Start the second request to get the last word or sentence
       request(getLastWord, function(error,response,body){
         var recv = JSON.parse(body);  //parse as json
-        console.log(recv);
+
           if (!givenText){ //check if givenText is null
         var str = recv.messages['0']['text']; // text from conversation
         }
         else {
           var str = givenText;
         }
-        var user = recv.messages['0']['username'];
+        var user = recv.messages['0']['username'];// user
         if (user != 'reflect' || str == givenText)
             {
               var resObj =he.decideLang(str);  //reflect
@@ -65,7 +65,7 @@ app.post('/slackReflector',function(req,res){
               res.end();
   });
 });
-
+//app port
 app.listen(4321, function(){
   console.log('Server stated on port 4321');
 });
