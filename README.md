@@ -1,4 +1,4 @@
-what is Reflector?
+What is Reflector?
 Reflector is an app to reflect a text from english to hebrew and vice versa.
 
 preInstallations:
