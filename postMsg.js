@@ -9,7 +9,7 @@ postBack: function(postReflector){
         return body;
       }
       else {
-        console.log("Errpr while posting back");
+        console.log("error while posting back");
         return false;
       }
     });
