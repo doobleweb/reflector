@@ -34,7 +34,8 @@ app.get('/', function(req, res) {
   });
 });
 
-// This route handles get request to a /oauth endpoint. We'll use this endpoint for handling the logic of the Slack oAuth process behind app.
+// This route handles get request to a /oauth endpoint. We'll use this endpoint for handling the
+// logic of the Slack oAuth process behind app.
 app.get('/oauth', function(req, res) {
 
   if (!req.query.code) { // access denied
@@ -199,3 +200,23 @@ const getReply = function (body){
   }
   });
 }
+
+//api call from postman try
+app.get('/team/:id', function (req, res) {
+  getToken(req.params.id)
+  .then((tokenRes) => {
+      res.send({
+        'team_id': req.params.id,
+        'token': tokenRes
+      });
+  })
+  .catch(console.error);
+});
+
+//post call to reflector with team id as a parameter and get in return the team token
+app.post('/team/token', function (req,res) {
+  console.log(req);
+  var id = req.body.id;
+  console.log(req.body);
+  res.redirect('/team/' + id);
+});
