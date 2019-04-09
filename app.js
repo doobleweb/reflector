@@ -2,17 +2,17 @@ var express = require('express');          // express get and post
 var request = require('request');          // need inorder to make a get command inside post request
 var bodyParser = require('body-parser');   // need inorder to parse body in line 19
 var he = require('./he');                  // supllies the function that will reflect the text
+require('dotenv').config();                // required for .env file
 
-var http = require('http');
-var fs = require('fs');
+var http = require('http');                // Needed modules for parsing HTML files that are in the
+var fs = require('fs');                    // public folder
 
-require('dotenv').config();
-const storage = require('node-persist');
+const storage = require('node-persist');   //storage module for saving the token outside the app
 storage.init();
 
 const app = express();
 
-app.use(bodyParser.json()); // support json encoded bodies
+app.use(bodyParser.json());                         // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
 //listen  port
@@ -25,10 +25,10 @@ app.get('/', function(req, res) {
   res.writeHead(200, {'Content-Type': 'text/html'});
   fs.readFile(__dirname + "/public/index.html",null,function (error, data) {
     if (error) {
-      res.writeHead(404);
+      res.writeHead(404); //page not fount
       res.write('File not found');
     } else {
-      res.write(data);
+      res.write(data);   //write back to front end
     }
     res.end();
   });
@@ -56,9 +56,9 @@ app.get('/oauth', function(req, res) {
        // Get an auth token (and store the team_id / token)
        storage.setItem(JSON.parse(body).team_id, JSON.parse(body).access_token);
        res.sendStatus=200;
+       res.redirect('/success');   //if success redirect to success.html page
      }
    })
-   res.redirect('/success');
  });
 
 //success on installing slack app
@@ -81,6 +81,7 @@ app.get('/success', function(req, res){
 // c_id represents channel id, str represents the text from the last massage
 // str can be one or more words that will be tranfered to decideLang function to decide which language to reflect
 // after that the app will post back with api function
+//
 app.post('/slackReflector',function(req,res){
     if(req.body.token !== process.env.SLACK_VERIFICATION_TOKEN) {
       // the request is NOT coming from Slack!
@@ -94,6 +95,7 @@ app.post('/slackReflector',function(req,res){
     }
 });
 
+//get token function from the storage instance
 const getToken = function(team){
   return  new Promise(function(resolve, reject) {
     let oauthToken = storage.getItem(team);
@@ -101,6 +103,7 @@ const getToken = function(team){
   });
 }
 
+//get user full real name for Reflector answer
 const getUserFullname = function (token, user, uri) {
   return new Promise(function(resolve, reject) {
     var getName = {
@@ -121,6 +124,7 @@ const getUserFullname = function (token, user, uri) {
   });
 }
 
+// get last word function from the channel
 const getLastWord = function(token,channel_id, uri) {
   return new Promise(function(resolve, reject) {
     var getLastWord = {
@@ -141,7 +145,9 @@ const getLastWord = function(token,channel_id, uri) {
   });
 }
 
-// Reply in JSON
+// Reply to channel according to given word in the body
+// if the user sent /reflect with following text the app will take that text and reflect it
+// else if the user sent just /reflect without text the app will take the last message text and reflect it
 const getReply = function (body){
   return new Promise(function (resolve, reject) {
     let data = {};
@@ -215,8 +221,6 @@ app.get('/team/:id', function (req, res) {
 
 //post call to reflector with team id as a parameter and get in return the team token
 app.post('/team/token', function (req,res) {
-  console.log(req);
   var id = req.body.id;
-  console.log(req.body);
   res.redirect('/team/' + id);
 });
