@@ -106,14 +106,12 @@ const getReply = function (body){
       if(body.text)
       {
          return resolve(buildData('in_channel', he.decideLang(body.text)));
-      //  return resolve(buildData('in_channel', 'Reflecting ' + body.text, he.decideLang(body.text)));
       }
       else
       { // no text entered
         getLastWord(tokenRes, body.channel_id, process.env.SLACK_API_CONVERSATION_HISTORY_URL)
         .then((lastWordRes) => {
           if (lastWordRes['subtype'] !== "bot_message"){  //check if last message was from reflector app
-          //  data = buildData('in_channel', 'Reflecting ' + lastWordRes['text'], he.decideLang(lastWordRes['text']));
             data = buildData('in_channel', he.decideLang(lastWordRes['text']));
           } else {  //if last message was from the app return error
 
