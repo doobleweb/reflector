@@ -115,7 +115,7 @@ const getReply = function (body){
             data = buildData('in_channel', he.decideLang(lastWordRes['text']));
           } else {  //if last message was from the app return error
 
-            data = buildData('in_channel', 'Reflector Error', 'Reflector cannot be used twice in a row');
+            data = buildData('in_channel', 'Reflector Error');
            }
            return resolve(data);
          }).catch(console.error);
