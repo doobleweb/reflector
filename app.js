@@ -16,7 +16,7 @@ app.use(bodyParser.json());                         // support json encoded bodi
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
 //listen  port
-app.listen(4321, function(){
+app.listen(process.env.PORT || 4321, function(){
   console.log('Server stated on port 4321');
 });
 
@@ -90,8 +90,21 @@ app.post('/slackReflector',function(req,res){
     } else {
       getReply(req.body)
         .then((result) => {
-          res.json(result);
-        });
+          var postReflector = {
+            uri : process.env.SLACK_API_POST_MESSAGE,
+            method: 'POST',
+            qs:   result
+          }
+          request(postReflector, function (error, response, body) {
+            if (!error && response.statusCode == 200) {
+              res.send(response.status_code);
+            }
+            else {
+              console.log("error while posting back");
+            }
+          });
+          res.end();
+        }).catch(console.error);
     }
 });
 
@@ -105,17 +118,17 @@ const getReply = function (body){
     .then((tokenRes) => {
       if(body.text)
       {
-         return resolve(buildData('in_channel', he.decideLang(body.text)));
+         return resolve(buildData(tokenRes, body.channel_id, he.decideLang(body.text)));
       }
       else
       { // no text entered
         getLastWord(tokenRes, body.channel_id, process.env.SLACK_API_CONVERSATION_HISTORY_URL)
         .then((lastWordRes) => {
           if (lastWordRes['subtype'] !== "bot_message"){  //check if last message was from reflector app
-            data = buildData('in_channel', he.decideLang(lastWordRes['text']));
+            data = buildData(tokenRes, body.channel_id, he.decideLang(lastWordRes['text']));
           } else {  //if last message was from the app return error
 
-            data = buildData('in_channel', 'Reflector Error');
+            data = buildData(tokenRes, body.channel_id, "");
            }
            return resolve(data);
          }).catch(console.error);
@@ -125,14 +138,12 @@ const getReply = function (body){
   }
 
 //build data that is sent back to slack channel
-const buildData = function (type,text,attachText) {
+const buildData = function (token, channel, attachText) {
   data = {
-    response_type: type, // private message
-    text: text,
-    attachments:[{
-      text: attachText
-    }
-  ]};
+    'token':      token,
+    'channel':    channel,
+    'text':       attachText
+    };
   return data;
   }
 
