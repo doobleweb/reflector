@@ -90,8 +90,21 @@ app.post('/slackReflector',function(req,res){
     } else {
       getReply(req.body)
         .then((result) => {
-          res.json(result);
-        });
+          var postReflector = {
+            uri : process.env.SLACK_API_POST_MESSAGE,
+            method: 'POST',
+            qs:   result
+          }
+          request(postReflector, function (error, response, body) {
+            if (!error && response.statusCode == 200) {
+              res.send(response.status_code);
+            }
+            else {
+              console.log("error while posting back");
+            }
+          });
+          res.end();
+        }).catch(console.error);
     }
 });
 
@@ -105,15 +118,14 @@ const getReply = function (body){
     .then((tokenRes) => {
       if(body.text)
       {
-
-         return resolve(buildData('in_channel', he.decideLang(body.text)));
+         return resolve(buildData(tokenRes, body.channel_id, he.decideLang(body.text)));
       }
       else
       { // no text entered
         getLastWord(tokenRes, body.channel_id, process.env.SLACK_API_CONVERSATION_HISTORY_URL)
         .then((lastWordRes) => {
           if (lastWordRes['subtype'] !== "bot_message"){  //check if last message was from reflector app
-            data = buildData('in_channel', he.decideLang(lastWordRes['text']));
+            data = buildData(tokenRes, body.channel_id, he.decideLang(lastWordRes['text']));
           } else {  //if last message was from the app return error
 
             data = buildData(tokenRes, body.channel_id, "");
@@ -126,13 +138,12 @@ const getReply = function (body){
   }
 
 //build data that is sent back to slack channel
-const buildData = function (type,attachText) {
+const buildData = function (token, channel, attachText) {
   data = {
-    response_type: type, // private message
-    attachments:[{
-      text: attachText
-    }
-  ]};
+    'token':      token,
+    'channel':    channel,
+    'text':       attachText
+    };
   return data;
   }
 
