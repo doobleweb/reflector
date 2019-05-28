@@ -33,3 +33,27 @@ How to install on new slack?
   9. Add OAuth & Permissions:
   10. Copy the app token and paste it in config.json inside "Slack_API_Key".
   11. In scopes give the permission: channels:history, channels:read, chat:write:bot.
+
+
+  API Section:
+  /team/id
+            the user can do a post msg to /team/id with his team id and get the token that curesponds with his TeamID in the db.
+           url : ("server address")/team/id
+           body: {"team_id" : "(your team id)"}
+
+           the return message will be:
+           {"team_id" : "(your team id)",
+            "token"      : "(the team token)"}
+
+          2. /userData
+            the user can do a post msg to /userData with his team id and a username and get the data about this user if he exist
+           url : ("server address")/userData
+           body: {"team_id" : "(your team id)",
+                       "username" : "(the user you want to find about)"}
+
+           the return message will be:
+           {"Real Name" : "(user real name)"
+            "username"  :  "(user username)"
+            "user id"        :  "(user userID)"
+            "team id"       :  "(user teamID)",
+            "token"          :  "(the team token)"}
