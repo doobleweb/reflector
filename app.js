@@ -245,3 +245,18 @@ app.post('/userData', function (req,res) {
     }).catch(console.error);
   }).catch(console.error);
 });
+
+//api call from postman try
+app.get('/postmanReflector/:ans', function (req, res) {
+   res.send({
+        'reflected': req.params.ans
+  })
+});
+
+//post call to reflector with team id as a parameter and get in return the team token
+app.post('/postmanReflector', function (req,res) {
+  var word   = req.body.str;
+  var choice = req.body.choice;
+  var ans = he.decideLang(word,choice);
+  res.redirect('/postmanReflector/' + ans);
+});
